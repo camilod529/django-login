@@ -38,11 +38,16 @@ BASE_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",  # django all auth
 ]
 THIRD_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_simplejwt.token_blacklist",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 ]
 
 LOCAL_APPS = [
@@ -51,7 +56,10 @@ LOCAL_APPS = [
 
 INSTALLED_APPS = BASE_APPS + THIRD_APPS + LOCAL_APPS
 
+SITE_ID = 1
+
 MIDDLEWARE = [
+    "allauth.account.middleware.AccountMiddleware",  # all auth middleware
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -134,6 +142,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
@@ -171,4 +180,30 @@ SIMPLE_JWT = {
     # "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
     # "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     # "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+}
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+LOGIN_REDIRECT_URL = "/"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+    }
 }
